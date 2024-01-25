@@ -13,6 +13,10 @@ export class App extends gfx.GfxApp
     
     private starfield: gfx.Particles2;
 
+    private laserSound: HTMLAudioElement;
+
+    private mousePosition: gfx.Vector2;
+
     // --- Create the App class ---
     constructor()
     {
@@ -23,13 +27,15 @@ export class App extends gfx.GfxApp
         this.star = gfx.Geometry2Factory.createBox();
 
         this.starfield = new gfx.Particles2(this.star, 200);
+    
+        this.laserSound = new Audio('./laser.mp3');
+        this.mousePosition = new gfx.Vector2();
     }
 
 
     // --- Initialize the graphics scene ---
     createScene(): void 
     {
-        
         this.renderer.viewport = gfx.Viewport.CROP;
 
         this.ship.scale.set(0.08, 0.08);
@@ -43,7 +49,7 @@ export class App extends gfx.GfxApp
             this.starfield.particlePositions[i].set(Math.random()*2-1, Math.random()*2-1);
         }
 
-        // Update the particile system position and sizes
+        // Update the particle system position and sizes
         this.starfield.update(true, true);
 
         this.scene.add(this.starfield);
@@ -54,6 +60,27 @@ export class App extends gfx.GfxApp
     // --- Update is called once each frame by the main graphics loop ---
     update(deltaTime: number): void 
     {
+        this.ship.lookAt(this.mousePosition);
+    }
 
+    /**
+     * Method called when the mouse is clicked. Subclasses can override this method to handle the event.
+     * 
+     * @param event - The MouseEvent object associated with the mouse click
+     */
+    onMouseDown(event: MouseEvent): void 
+    {
+        this.laserSound.play();
+        this.laserSound.currentTime = 0;
+    }
+
+    /**
+     * Method called when the mouse is moved. Subclasses can override this method to handle the event.
+     * 
+     * @param event - The MouseEvent object associated with the mouse movement
+     */
+    onMouseMove(event: MouseEvent): void 
+    {
+        this.mousePosition.copy(this.getNormalizedDeviceCoordinates(event.x, event.y));
     }
 }
