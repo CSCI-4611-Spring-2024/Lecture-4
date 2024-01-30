@@ -60,7 +60,16 @@ export class App extends gfx.GfxApp
     // --- Update is called once each frame by the main graphics loop ---
     update(deltaTime: number): void 
     {
-        this.ship.lookAt(this.mousePosition);
+        const shipSpeed = 1.0; // normalized device units / sec
+
+        if(this.ship.position.distanceTo(this.mousePosition) > 0.01)
+        {
+            this.ship.lookAt(this.mousePosition);
+
+            const shipDirection = new gfx.Vector2(0, shipSpeed * deltaTime);
+            shipDirection.rotate(this.ship.rotation);
+            this.ship.position.add(shipDirection);
+        }
     }
 
     /**
